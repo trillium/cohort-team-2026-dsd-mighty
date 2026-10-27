@@ -10,7 +10,8 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "type-check": "next typegen && tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest",
+    "prepare": "cd .. && husky frontend/.husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.0",
@@ -32,10 +33,19 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.1.2",
+    "husky": "^9.1.7",
     "jsdom": "^30.1.3",
+    "lint-staged": "^15.5.2",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.12"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css}": "biome check --write --no-errors-on-unmatched",
+    "*.{ts,tsx}": [
+      "node scripts/check-no-emoji.mjs",
+      "bash scripts/tsc-staged.sh"
+    ]
   },
   "packageManager": "pnpm@10.30.2"
 }

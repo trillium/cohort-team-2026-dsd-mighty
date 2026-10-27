@@ -10,7 +10,7 @@ The checker runs by `node` from the repo root because the root has no `package.j
 |------|------|----------|-----------|
 | Backend tests pass before merge | ci | `.github/workflows/ci.yml` | - |
 | Backend is ruff-clean and ruff-formatted | ci | `backend/pyproject.toml`, `.github/workflows/ci.yml` | - |
-| Frontend tests pass before merge | ci | `.github/workflows/ci.yml` | - |
+| Frontend tests (Vitest) pass before merge | ci | `frontend/vitest.config.ts`, `.github/workflows/ci.yml` | - |
 | TypeScript strict; frontend types check before merge | ci | `frontend/tsconfig.json`, `.github/workflows/ci.yml` | - |
 | Frontend builds before merge | ci | `.github/workflows/ci.yml` | - |
 | Every rule above has an enforcer that exists; no exception has expired | ci | `scripts/check-enforcement.mjs`, `.github/workflows/ci.yml` | - |

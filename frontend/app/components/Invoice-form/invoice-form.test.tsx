@@ -3,20 +3,20 @@ import userEvent from "@testing-library/user-event";
 import { accountStatuses } from "@/lib/invoice-form-schema";
 import { InvoiceForm } from "./invoice-form";
 
-const push = jest.fn();
+const push = vi.fn();
 
-jest.mock("next/navigation", () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
 }));
 
 describe("InvoiceForm", () => {
   beforeEach(() => {
     push.mockClear();
-    jest.spyOn(console, "log").mockImplementation(() => {});
+    vi.spyOn(console, "log").mockImplementation(() => {});
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("renders every field by its label", () => {

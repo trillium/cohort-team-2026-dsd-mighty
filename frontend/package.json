@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "lint:biome": "biome check .",
     "format": "prettier --write .",
+    "format:biome": "biome check --write .",
     "format:check": "prettier --check .",
     "type-check": "next typegen && tsc --noEmit",
     "test": "jest",
@@ -23,6 +25,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.15",
     "@tailwindcss/turbopack": "^4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",

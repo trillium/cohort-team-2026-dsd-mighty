@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import DashboardPage from "./page";
 
-jest.mock("@/components/Invoice-table/invoice-table", () => ({
+vi.mock("@/components/Invoice-table/invoice-table", () => ({
   InvoiceTable: () => <div data-testid="invoice-table" />,
 }));
 

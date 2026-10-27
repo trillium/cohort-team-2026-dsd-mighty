@@ -1,0 +1,3 @@
+{
+  "{ENFORCEMENT,CLAUDE}.md": "node scripts/check-enforcement.mjs"
+}

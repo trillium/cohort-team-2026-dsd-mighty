@@ -23,6 +23,8 @@ Frontend, from `frontend/`:
 - `pnpm build` - `next build`
 - `pnpm dev` - dev server
 
+Git hooks (husky, in `frontend/.husky`) are installed by `pnpm install` in `frontend/`. Commits must follow `type(scope): description`; staged frontend files are Biome-fixed and type-checked. `gitleaks` is used when installed (`brew install gitleaks`).
+
 Repo root:
 
 - `node scripts/check-enforcement.mjs` - the rule -> enforcer table (below)

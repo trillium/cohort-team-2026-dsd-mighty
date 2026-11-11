@@ -2,55 +2,53 @@
 
 They once said performed_by / timestamp / id where the table says user_id /
 occurred_at / event_id, and required a new_status the table allows to be null.
-The columns are read from the migration that creates the table.
+The table's columns and nullability are checked against the migrated database
+in backend/supabase/tests/audit_events_columns.test.sql.
 """
 
-import re
-from pathlib import Path
+from datetime import UTC, datetime
 from uuid import uuid4
+
+import pytest
+from pydantic import ValidationError
 
 from backend.schemas.audit_event import AuditEventCreate, AuditEventRead
 
-MIGRATION = (
-    Path(__file__).parents[1]
-    / "supabase/migrations/20261027135848_create_bill_workflow_tables.sql"
-)
+
+def test_a_row_with_only_the_not_null_columns_reads():
+    row = {
+        "event_id": uuid4(),
+        "bill_id": uuid4(),
+        "action": "bill_created",
+        "occurred_at": datetime.now(UTC),
+    }
+
+    event = AuditEventRead.model_validate(row)
+
+    assert event.user_id is None
+    assert event.old_status is None
+    assert event.new_status is None
+    assert event.details is None
 
 
-def table_columns() -> dict[str, bool]:
-    """column name -> nullable, for public.audit_events."""
-    sql = MIGRATION.read_text()
-    body = re.search(
-        r"create table public\.audit_events \((.*?)\n\);", sql, re.DOTALL
-    ).group(1)
-    columns = {}
-    for line in body.splitlines():
-        line = line.split("--")[0].strip().rstrip(",")
-        match = re.match(r"(\w+) \w+", line)
-        if match:
-            columns[match.group(1)] = (
-                "not null" not in line and "primary key" not in line
-            )
-    return columns
+@pytest.mark.parametrize("missing", ["event_id", "bill_id", "action", "occurred_at"])
+def test_a_row_missing_a_not_null_column_is_rejected(missing):
+    row = {
+        "event_id": uuid4(),
+        "bill_id": uuid4(),
+        "action": "bill_created",
+        "occurred_at": datetime.now(UTC),
+    }
+    del row[missing]
+
+    with pytest.raises(ValidationError):
+        AuditEventRead.model_validate(row)
 
 
-def test_read_schema_has_exactly_the_table_columns():
-    columns = table_columns()
-
-    assert set(AuditEventRead.model_fields) == set(columns)
-
-
-def test_create_schema_leaves_the_generated_columns_to_the_database():
-    columns = table_columns()
-
-    assert set(AuditEventCreate.model_fields) == set(columns) - {"event_id"}
-
-
-def test_a_column_is_required_exactly_when_the_table_says_not_null():
-    columns = table_columns()
-
-    for name, field in AuditEventRead.model_fields.items():
-        assert field.is_required() == (not columns[name]), name
+@pytest.mark.parametrize("name", ["event_id", "performed_by", "timestamp", "id"])
+def test_create_rejects_generated_and_old_field_names(name):
+    with pytest.raises(ValidationError):
+        AuditEventCreate(bill_id=uuid4(), action="bill_created", **{name: uuid4()})
 
 
 def test_an_event_with_no_new_status_is_valid():
